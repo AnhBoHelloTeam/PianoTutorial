@@ -11,7 +11,6 @@ class PianoRecorder {
         this.clearBtn = document.getElementById('clearBtn');
         this.exportRecBtn = document.getElementById('exportRecBtn');
         this.importRecInput = document.getElementById('importRecInput');
-        this.autoSaveRecToggle = document.getElementById('autoSaveRecToggle');
         this.currentNoteDisplay = document.getElementById('currentNote');
         this.recordingStatus = document.getElementById('recordingStatus');
         this.octaveSelect = document.getElementById('octaveSelect');
@@ -49,10 +48,7 @@ class PianoRecorder {
     init() {
         this.setupEventListeners();
         this.updateUI();
-        // try load persisted single recording
-        if (this.loadRecordingFromStorage()) {
-            this.updateUI();
-        }
+        // no auto-load to avoid localStorage usage
     }
 
     setupEventListeners() {
@@ -285,13 +281,12 @@ class PianoRecorder {
             this.recordingStatus.style.color = '#4caf50';
         }
 
-        this.maybeAutoSaveRecording();
+        // no autosave
     }
 
     recordNote(note) {
         const timestamp = Date.now() - this.startTime;
         this.recordedNotes.push({ note, timestamp });
-        this.maybeAutoSaveRecording(true);
     }
 
     playRecording() {
@@ -317,7 +312,7 @@ class PianoRecorder {
             this.recordingStatus.style.color = '#666';
         }
 
-        this.saveRecordingToStorage([]);
+        // no autosave clear
     }
 
     updateUI() {
@@ -338,36 +333,7 @@ class PianoRecorder {
         this.updateTracksInfo();
     }
 
-    // Recording persistence and import/export
-    storageKey() { return 'pv-single-recording'; }
-    storageAutoKey() { return 'pv-single-recording-auto'; }
-
-    maybeAutoSaveRecording(throttled = false) {
-        if (!this.autoSaveRecToggle || !this.autoSaveRecToggle.checked) return;
-        // simple throttle by saving only every ~10 notes when throttled
-        if (throttled && (this.recordedNotes.length % 10 !== 0)) return;
-        this.saveRecordingToStorage(this.recordedNotes);
-    }
-
-    saveRecordingToStorage(data) {
-        try {
-            localStorage.setItem(this.storageKey(), JSON.stringify({ version: 1, recordedNotes: data }));
-        } catch(e) {}
-    }
-
-    loadRecordingFromStorage() {
-        try {
-            const raw = localStorage.getItem(this.storageKey());
-            if (!raw) return false;
-            const json = JSON.parse(raw);
-            if (json && Array.isArray(json.recordedNotes)) {
-                this.recordedNotes = json.recordedNotes;
-                return true;
-            }
-        } catch(e) {}
-        return false;
-    }
-
+    // Recording import/export only (no autosave)
     exportRecording() {
         if (!this.recordedNotes.length) {
             window.PianoUtils?.showNotification?.('Chưa có ghi âm để export', 'error');
