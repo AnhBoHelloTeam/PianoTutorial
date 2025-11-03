@@ -17,6 +17,22 @@ document.addEventListener('DOMContentLoaded', function() {
             navMenu.classList.remove('active');
         }));
     }
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const applyTheme = (theme) => {
+        document.documentElement.classList.toggle('theme-dark', theme === 'dark');
+        if (themeToggle) themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    };
+    const savedTheme = localStorage.getItem('pv-theme') || 'light';
+    applyTheme(savedTheme);
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const next = (localStorage.getItem('pv-theme') || 'light') === 'light' ? 'dark' : 'light';
+            localStorage.setItem('pv-theme', next);
+            applyTheme(next);
+        });
+    }
 });
 
 // Smooth scrolling for anchor links

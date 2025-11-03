@@ -139,6 +139,25 @@ class SongPlayer {
                 this.loadSong(songId);
             });
         });
+
+        // Search & filter
+        const searchInput = document.getElementById('songSearchInput');
+        const difficultySelect = document.getElementById('songDifficultyFilter');
+        const filterFn = () => {
+            const q = (searchInput?.value || '').toLowerCase();
+            const diff = (difficultySelect?.value || 'all');
+            document.querySelectorAll('.song-card').forEach(card => {
+                const title = card.querySelector('.song-info h3')?.textContent?.toLowerCase() || '';
+                const diffEl = card.querySelector('.difficulty');
+                const cardDiff = (diffEl?.classList?.contains('easy') && 'easy') || (diffEl?.classList?.contains('medium') && 'medium') || (diffEl?.classList?.contains('hard') && 'hard') || 'all';
+                const matchText = !q || title.includes(q);
+                const matchDiff = diff === 'all' || diff === cardDiff;
+                card.style.display = (matchText && matchDiff) ? '' : 'none';
+            });
+        };
+        if (searchInput) searchInput.addEventListener('input', window.PianoUtils?.debounce?.(filterFn, 150) || filterFn);
+        if (difficultySelect) difficultySelect.addEventListener('change', filterFn);
+        filterFn();
     }
 
     loadSong(songId) {

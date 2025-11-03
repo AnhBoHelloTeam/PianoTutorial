@@ -13,6 +13,56 @@ body {
     min-height: 100vh;
 }
 
+/* Dark theme overrides */
+.theme-dark body, .theme-dark {
+    color: #e5e5e5;
+    background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%);
+}
+
+.theme-dark .navbar {
+    background: rgba(17, 24, 39, 0.9);
+}
+
+.theme-dark .nav-link { color: #e5e5e5; }
+.theme-dark .nav-link:hover, .theme-dark .nav-link.active { background: #374151; color: #fff; }
+
+.theme-dark .hero { color: #e5e5e5; }
+.theme-dark .features { background: #0b1222; }
+.theme-dark .feature-card { background: #111827; border-color: #1f2937; }
+.theme-dark .feature-card h3 { color: #e5e5e5; }
+.theme-dark .feature-card p { color: #b3b3b3; }
+.theme-dark .feature-link { color: #93c5fd; }
+
+.theme-dark .how-to-use { background: linear-gradient(135deg, #111827, #1f2937); }
+.theme-dark .footer { background: #111827; }
+
+.theme-dark .piano-page,
+.theme-dark .songs-page,
+.theme-dark .analyzer-page { background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%); }
+
+.theme-dark .control-btn { background: rgba(255,255,255,0.08); color: #e5e5e5; }
+.theme-dark .control-btn:hover { background: rgba(255,255,255,0.12); }
+
+.theme-dark .song-card,
+.theme-dark .song-player,
+.theme-dark .analyzer-workspace,
+.theme-dark .piano-preview,
+.theme-dark .info-card { background: rgba(17,24,39,0.95); }
+
+.theme-dark .songs-header, .theme-dark .analyzer-header { color: #e5e5e5; }
+
+.theme-dark .piano { background: #0b1222; }
+.theme-dark .white-key { background: linear-gradient(to bottom, #f3f4f6, #e5e7eb); }
+.theme-dark .black-key { background: linear-gradient(to bottom, #111827, #1f2937); }
+
+.theme-dark .karaoke-container { background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%); }
+
+.theme-dark .songs-search-bar input, .theme-dark .songs-search-bar select {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid #374151;
+    color: #e5e5e5;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -527,6 +577,13 @@ body {
     text-align: center;
     color: white;
     margin-bottom: 50px;
+}
+
+.songs-search-bar { display:flex; gap:10px; justify-content:center; margin-top:15px; }
+.songs-search-bar input, .songs-search-bar select {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
 }
 
 .songs-header h1 {

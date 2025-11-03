@@ -47,6 +47,9 @@
                 <span class="bar"></span>
                 <span class="bar"></span>
             </div>
+            <button id="themeToggle" class="nav-link" style="border:none;background:transparent;cursor:pointer;">
+                <i class="fas fa-moon"></i>
+            </button>
         </div>
     </nav>
 
@@ -55,6 +58,15 @@
             <div class="songs-header">
                 <h1>Bài Mẫu Piano</h1>
                 <p>Chọn một bài hát để học và chơi theo hướng dẫn</p>
+                <div class="songs-search-bar">
+                    <input id="songSearchInput" type="text" placeholder="Tìm bài hát..." />
+                    <select id="songDifficultyFilter">
+                        <option value="all">Tất cả độ khó</option>
+                        <option value="easy">Dễ</option>
+                        <option value="medium">Trung bình</option>
+                        <option value="hard">Khó</option>
+                    </select>
+                </div>
             </div>
 
             <div class="songs-grid">
