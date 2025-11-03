@@ -9,6 +9,9 @@ class PianoRecorder {
         this.recordBtn = document.getElementById('recordBtn');
         this.playBtn = document.getElementById('playBtn');
         this.clearBtn = document.getElementById('clearBtn');
+        this.exportRecBtn = document.getElementById('exportRecBtn');
+        this.importRecInput = document.getElementById('importRecInput');
+        this.autoSaveRecToggle = document.getElementById('autoSaveRecToggle');
         this.currentNoteDisplay = document.getElementById('currentNote');
         this.recordingStatus = document.getElementById('recordingStatus');
         this.octaveSelect = document.getElementById('octaveSelect');
@@ -46,6 +49,10 @@ class PianoRecorder {
     init() {
         this.setupEventListeners();
         this.updateUI();
+        // try load persisted single recording
+        if (this.loadRecordingFromStorage()) {
+            this.updateUI();
+        }
     }
 
     setupEventListeners() {
@@ -59,6 +66,13 @@ class PianoRecorder {
         
         if (this.clearBtn) {
             this.clearBtn.addEventListener('click', () => this.clearRecording());
+        }
+
+        if (this.exportRecBtn) {
+            this.exportRecBtn.addEventListener('click', () => this.exportRecording());
+        }
+        if (this.importRecInput) {
+            this.importRecInput.addEventListener('change', (e) => this.importRecording(e));
         }
 
         if (this.octaveSelect) {
@@ -270,11 +284,14 @@ class PianoRecorder {
             this.recordingStatus.textContent = `Đã ghi ${this.recordedNotes.length} nốt nhạc`;
             this.recordingStatus.style.color = '#4caf50';
         }
+
+        this.maybeAutoSaveRecording();
     }
 
     recordNote(note) {
         const timestamp = Date.now() - this.startTime;
         this.recordedNotes.push({ note, timestamp });
+        this.maybeAutoSaveRecording(true);
     }
 
     playRecording() {
@@ -299,6 +316,8 @@ class PianoRecorder {
             this.recordingStatus.textContent = 'Sẵn sàng ghi âm';
             this.recordingStatus.style.color = '#666';
         }
+
+        this.saveRecordingToStorage([]);
     }
 
     updateUI() {
@@ -317,6 +336,77 @@ class PianoRecorder {
         }
 
         this.updateTracksInfo();
+    }
+
+    // Recording persistence and import/export
+    storageKey() { return 'pv-single-recording'; }
+    storageAutoKey() { return 'pv-single-recording-auto'; }
+
+    maybeAutoSaveRecording(throttled = false) {
+        if (!this.autoSaveRecToggle || !this.autoSaveRecToggle.checked) return;
+        // simple throttle by saving only every ~10 notes when throttled
+        if (throttled && (this.recordedNotes.length % 10 !== 0)) return;
+        this.saveRecordingToStorage(this.recordedNotes);
+    }
+
+    saveRecordingToStorage(data) {
+        try {
+            localStorage.setItem(this.storageKey(), JSON.stringify({ version: 1, recordedNotes: data }));
+        } catch(e) {}
+    }
+
+    loadRecordingFromStorage() {
+        try {
+            const raw = localStorage.getItem(this.storageKey());
+            if (!raw) return false;
+            const json = JSON.parse(raw);
+            if (json && Array.isArray(json.recordedNotes)) {
+                this.recordedNotes = json.recordedNotes;
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    }
+
+    exportRecording() {
+        if (!this.recordedNotes.length) {
+            window.PianoUtils?.showNotification?.('Chưa có ghi âm để export', 'error');
+            return;
+        }
+        const data = { version: 1, recordedNotes: this.recordedNotes };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'piano-recording.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        window.PianoUtils?.showNotification?.('Đã export ghi âm', 'success');
+    }
+
+    importRecording(e) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const json = JSON.parse(reader.result);
+                if (json && Array.isArray(json.recordedNotes)) {
+                    this.recordedNotes = json.recordedNotes;
+                    this.updateUI();
+                    this.saveRecordingToStorage(this.recordedNotes);
+                    window.PianoUtils?.showNotification?.('Đã import ghi âm', 'success');
+                } else {
+                    throw new Error('invalid');
+                }
+            } catch (err) {
+                window.PianoUtils?.showNotification?.('Import ghi âm thất bại', 'error');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
     }
 
     // Multi-track methods

@@ -68,6 +68,16 @@
                     <button id="clearBtn" class="control-btn">
                         <i class="fas fa-trash"></i> Xóa
                     </button>
+                    <button id="exportRecBtn" class="control-btn">
+                        <i class="fas fa-download"></i> Export Ghi
+                    </button>
+                    <label for="importRecInput" class="control-btn" style="cursor:pointer;">
+                        <i class="fas fa-upload"></i> Import Ghi
+                        <input id="importRecInput" type="file" accept="application/json" style="display:none;" />
+                    </label>
+                    <label class="control-btn" style="gap:8px;">
+                        <input id="autoSaveRecToggle" type="checkbox" style="accent-color:#667eea;" /> Auto save
+                    </label>
                     <label class="control-btn" style="gap:10px;">
                         <i class="fas fa-sliders-h"></i> Octave
                         <select id="octaveSelect" style="border:none;background:transparent;color:#fff;font-weight:600;">
