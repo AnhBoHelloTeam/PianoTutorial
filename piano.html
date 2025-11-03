@@ -161,6 +161,29 @@
                     <span id="recordingStatus">Sẵn sàng ghi âm</span>
                 </div>
             </div>
+
+            <div class="multi-track-panel">
+                <h3>Multi-Track Recording</h3>
+                <div class="track-selector">
+                    <button class="track-btn active" data-track="1">Track 1</button>
+                    <button class="track-btn" data-track="2">Track 2</button>
+                    <button class="track-btn" data-track="3">Track 3</button>
+                </div>
+                <div class="track-controls">
+                    <button id="recordTrackBtn" class="control-btn">
+                        <i class="fas fa-circle"></i> Ghi Track
+                    </button>
+                    <button id="playAllTracksBtn" class="control-btn" disabled>
+                        <i class="fas fa-play-circle"></i> Phát Tất Cả
+                    </button>
+                    <button id="clearAllTracksBtn" class="control-btn">
+                        <i class="fas fa-trash-alt"></i> Xóa Tất Cả
+                    </button>
+                </div>
+                <div class="tracks-info">
+                    <div id="tracksInfo">Track 1: 0 nốt | Track 2: 0 nốt | Track 3: 0 nốt</div>
+                </div>
+            </div>
         </div>
 
         <!-- Audio elements for each note -->
