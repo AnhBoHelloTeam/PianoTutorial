@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piano Virtual - Piano</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
@@ -190,6 +190,9 @@
                         <i class="fas fa-upload"></i> Import
                         <input id="importTracksInput" type="file" accept="application/json" style="display:none;" />
                     </label>
+                    <button id="exportMidiBtn" class="control-btn">
+                        <i class="fas fa-file-audio"></i> Export MIDI
+                    </button>
                 </div>
                 <div class="tracks-info">
                     <div id="tracksInfo">Track 1: 0 nốt | Track 2: 0 nốt | Track 3: 0 nốt</div>
@@ -215,10 +218,10 @@
             <audio data-note="C#5" src="./Piano/53.mp3"></audio>
             <audio data-note="D5" src="./Piano/54.mp3"></audio>
             <audio data-note="D#5" src="./Piano/55.mp3"></audio>
-        </div>
+    </div>
     </main>
 
     <script src="piano.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

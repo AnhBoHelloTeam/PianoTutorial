@@ -33,6 +33,7 @@ class PianoRecorder {
         this.tracksInfo = document.getElementById('tracksInfo');
         this.exportTracksBtn = document.getElementById('exportTracksBtn');
         this.importTracksInput = document.getElementById('importTracksInput');
+        this.exportMidiBtn = document.getElementById('exportMidiBtn');
 
         // MIDI
         this.midiToggleBtn = document.getElementById('midiToggle');
@@ -122,6 +123,10 @@ class PianoRecorder {
 
         if (this.midiToggleBtn) {
             this.midiToggleBtn.addEventListener('click', () => this.toggleMIDI());
+        }
+
+        if (this.exportMidiBtn) {
+            this.exportMidiBtn.addEventListener('click', () => this.exportMIDI());
         }
 
         // Add click listeners to piano keys
@@ -495,6 +500,107 @@ class PianoRecorder {
         const octave = Math.floor(num / 12) - 1;
         const name = names[num % 12];
         return `${name}${octave}`;
+    }
+
+    noteNameToMidi(note) {
+        const m = note.match(/^([A-G])(#?)(\d)$/);
+        if (!m) return null;
+        const names = { 'C':0,'C#':1,'D':2,'D#':3,'E':4,'F':5,'F#':6,'G':7,'G#':8,'A':9,'A#':10,'B':11 };
+        const n = m[1] + (m[2] === '#' ? '#' : '');
+        const octave = parseInt(m[3], 10);
+        return (octave + 1) * 12 + names[n];
+    }
+
+    // Build a simple SMF Type 1 with one tempo/meta track and N note tracks
+    exportMIDI() {
+        const hasAny = Object.values(this.tracks).some(t => t.length > 0);
+        if (!hasAny) {
+            window.PianoUtils?.showNotification?.('Không có track để export MIDI', 'error');
+            return;
+        }
+        const tpq = 480; // ticks per quarter
+        const tempo = 500000; // 120 BPM
+        const noteDurationMs = 200; // fixed length
+        const noteDurTicks = Math.round(tpq * (noteDurationMs / 500)); // 200ms at 120BPM => 192 ticks
+
+        const encodeStr = (s) => new TextEncoder().encode(s);
+        const write32 = (n) => new Uint8Array([ (n>>>24)&255, (n>>>16)&255, (n>>>8)&255, n&255 ]);
+        const write16 = (n) => new Uint8Array([ (n>>>8)&255, n&255 ]);
+        const varLen = (value) => {
+            let buffer = value & 0x7F;
+            const bytes = [];
+            while ((value >>= 7)) {
+                buffer <<= 8;
+                buffer |= ((value & 0x7F) | 0x80);
+            }
+            while (true) {
+                bytes.push(buffer & 0xFF);
+                if (buffer & 0x80) buffer >>= 8; else break;
+            }
+            return new Uint8Array(bytes);
+        };
+
+        const tracksBytes = [];
+        // Tempo/meta track
+        {
+            const ev = [];
+            // delta 0, set tempo
+            ev.push(...Array.from(varLen(0)));
+            ev.push(0xFF, 0x51, 0x03, (tempo>>>16)&255, (tempo>>>8)&255, tempo&255);
+            // End of track
+            ev.push(0x00, 0xFF, 0x2F, 0x00);
+            const body = new Uint8Array(ev);
+            const header = encodeStr('MTrk');
+            const len = write32(body.length);
+            tracksBytes.push(new Uint8Array([...header, ...len, ...body]));
+        }
+        // For each track 1..3
+        [1,2,3].forEach(trackNum => {
+            const items = this.tracks[trackNum];
+            if (!items || items.length === 0) return;
+            const sorted = [...items].sort((a,b) => a.timestamp - b.timestamp);
+            const ev = [];
+            let lastMs = 0;
+            sorted.forEach(n => {
+                const midi = this.noteNameToMidi(n.note);
+                if (midi == null) return;
+                const deltaMs = Math.max(0, n.timestamp - lastMs);
+                const deltaTicks = Math.round(deltaMs * tpq / 500); // since 120BPM => 500ms per quarter
+                ev.push(...Array.from(varLen(deltaTicks)));
+                ev.push(0x90, midi & 0x7F, 0x64); // Note on, velocity 100
+                // note off after fixed duration
+                ev.push(...Array.from(varLen(noteDurTicks)));
+                ev.push(0x80, midi & 0x7F, 0x40);
+                lastMs = n.timestamp + noteDurationMs;
+            });
+            // End of track
+            ev.push(0x00, 0xFF, 0x2F, 0x00);
+            const body = new Uint8Array(ev);
+            const header = encodeStr('MTrk');
+            const len = write32(body.length);
+            tracksBytes.push(new Uint8Array([...header, ...len, ...body]));
+        });
+
+        const numTracks = tracksBytes.length;
+        const header = new Uint8Array([
+            ...encodeStr('MThd'), ...write32(6), ...write16(1), ...write16(numTracks), ...write16(tpq)
+        ]);
+        let totalLen = header.length + tracksBytes.reduce((s,b)=>s+b.length,0);
+        const full = new Uint8Array(totalLen);
+        let off = 0;
+        full.set(header, off); off += header.length;
+        tracksBytes.forEach(b => { full.set(b, off); off += b.length; });
+
+        const blob = new Blob([full], { type: 'audio/midi' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'piano-tracks.mid';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        window.PianoUtils?.showNotification?.('Đã export MIDI', 'success');
     }
 }
 
