@@ -8,6 +8,7 @@ class KaraokePlayer {
         this.currentWordIndex = 0;
         this.timeouts = [];
         this.startTime = null;
+        this.transpose = 0;
         
         this.songs = {
             'lyrics-song': {
@@ -119,6 +120,9 @@ class KaraokePlayer {
         const pauseBtn = document.getElementById('pauseKaraokeBtn');
         const stopBtn = document.getElementById('stopKaraokeBtn');
         const resetBtn = document.getElementById('resetKaraokeBtn');
+        const transposeUp = document.getElementById('transposeUp');
+        const transposeDown = document.getElementById('transposeDown');
+        const transposeValue = document.getElementById('transposeValue');
 
         if (playBtn) {
             playBtn.addEventListener('click', () => this.play());
@@ -134,6 +138,15 @@ class KaraokePlayer {
         
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.reset());
+        }
+
+        const updateTransposeUI = () => { if (transposeValue) transposeValue.textContent = String(this.transpose); };
+        updateTransposeUI();
+        if (transposeUp) {
+            transposeUp.addEventListener('click', () => { this.transpose = Math.min(12, this.transpose + 1); updateTransposeUI(); });
+        }
+        if (transposeDown) {
+            transposeDown.addEventListener('click', () => { this.transpose = Math.max(-12, this.transpose - 1); updateTransposeUI(); });
         }
     }
 
@@ -263,7 +276,7 @@ class KaraokePlayer {
         let currentDelay = 0;
         notes.forEach((note, noteIndex) => {
             const timeout = setTimeout(() => {
-                this.playNote(note);
+                this.playNote(this.transposeNote(note, this.transpose));
             }, currentDelay);
             
             this.timeouts.push(timeout);
@@ -288,6 +301,24 @@ class KaraokePlayer {
                 key.classList.remove('active');
             }, 200);
         }
+    }
+
+    transposeNote(note, semitones) {
+        if (!semitones) return note;
+        const m = note.match(/^([A-G])(#?)(\d)$/);
+        if (!m) return note;
+        const base = m[1];
+        const sharp = m[2] === '#';
+        let octave = parseInt(m[3], 10);
+        const names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+        let idx = names.indexOf(base + (sharp ? '#' : ''));
+        if (idx < 0) return note;
+        let midi = (octave + 1) * 12 + idx; // MIDI mapping
+        midi += semitones;
+        const newOct = Math.floor(midi / 12) - 1;
+        const newIdx = ((midi % 12) + 12) % 12;
+        const newName = names[newIdx] + String(newOct);
+        return newName;
     }
 
     resetLyricsDisplay() {
