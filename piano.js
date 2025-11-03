@@ -31,6 +31,13 @@ class PianoRecorder {
         this.playAllTracksBtn = document.getElementById('playAllTracksBtn');
         this.clearAllTracksBtn = document.getElementById('clearAllTracksBtn');
         this.tracksInfo = document.getElementById('tracksInfo');
+        this.exportTracksBtn = document.getElementById('exportTracksBtn');
+        this.importTracksInput = document.getElementById('importTracksInput');
+
+        // MIDI
+        this.midiToggleBtn = document.getElementById('midiToggle');
+        this.midiAccess = null;
+        this.midiEnabled = false;
         
         this.init();
     }
@@ -104,6 +111,17 @@ class PianoRecorder {
 
         if (this.clearAllTracksBtn) {
             this.clearAllTracksBtn.addEventListener('click', () => this.clearAllTracks());
+        }
+
+        if (this.exportTracksBtn) {
+            this.exportTracksBtn.addEventListener('click', () => this.exportTracks());
+        }
+        if (this.importTracksInput) {
+            this.importTracksInput.addEventListener('change', (e) => this.importTracks(e));
+        }
+
+        if (this.midiToggleBtn) {
+            this.midiToggleBtn.addEventListener('click', () => this.toggleMIDI());
         }
 
         // Add click listeners to piano keys
@@ -382,6 +400,101 @@ class PianoRecorder {
             const hasAny = Object.values(this.tracks).some(t => t.length > 0);
             this.playAllTracksBtn.disabled = !hasAny;
         }
+    }
+
+    // Export/Import tracks
+    exportTracks() {
+        const data = {
+            version: 1,
+            tracks: this.tracks
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'piano-tracks.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        window.PianoUtils?.showNotification?.('Đã export tracks', 'success');
+    }
+
+    importTracks(e) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const json = JSON.parse(reader.result);
+                if (json && json.tracks) {
+                    this.tracks = json.tracks;
+                    this.updateTracksInfo();
+                    window.PianoUtils?.showNotification?.('Đã import tracks', 'success');
+                } else {
+                    throw new Error('Invalid format');
+                }
+            } catch (err) {
+                window.PianoUtils?.showNotification?.('Import thất bại', 'error');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    }
+
+    // MIDI support
+    async toggleMIDI() {
+        if (this.midiEnabled) {
+            this.disableMIDI();
+            return;
+        }
+        try {
+            const access = await navigator.requestMIDIAccess();
+            this.midiAccess = access;
+            this.enableMIDIInputs();
+            this.midiEnabled = true;
+            this.midiToggleBtn.innerHTML = '<i class="fas fa-keyboard"></i> MIDI ON';
+            window.PianoUtils?.showNotification?.('MIDI: ON', 'success');
+        } catch (e) {
+            window.PianoUtils?.showNotification?.('MIDI không khả dụng', 'error');
+        }
+    }
+
+    disableMIDI() {
+        if (!this.midiAccess) return;
+        this.midiAccess.inputs.forEach(input => input.onmidimessage = null);
+        this.midiEnabled = false;
+        if (this.midiToggleBtn) this.midiToggleBtn.innerHTML = '<i class="fas fa-keyboard"></i> MIDI Input';
+        window.PianoUtils?.showNotification?.('MIDI: OFF', 'info');
+    }
+
+    enableMIDIInputs() {
+        if (!this.midiAccess) return;
+        this.midiAccess.inputs.forEach(input => {
+            input.onmidimessage = (msg) => this.handleMIDIMessage(msg);
+        });
+    }
+
+    handleMIDIMessage(message) {
+        const [status, noteNumber, velocity] = message.data;
+        const command = status & 0xf0;
+        if (command === 0x90 && velocity > 0) { // note on
+            const noteName = this.midiNoteNumberToName(noteNumber);
+            if (noteName) {
+                this.playNote(noteName);
+                if (this.isRecording) this.recordNote(noteName);
+                if (this.isRecordingTrack) this.recordTrackNote(noteName);
+            }
+        }
+        // Optional: handle note off if needed
+    }
+
+    midiNoteNumberToName(num) {
+        // MIDI 60 = C4
+        const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const octave = Math.floor(num / 12) - 1;
+        const name = names[num % 12];
+        return `${name}${octave}`;
     }
 }
 

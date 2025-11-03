@@ -93,6 +93,10 @@
                     <button id="metronomeToggle" class="control-btn">
                         <i class="fas fa-play"></i> Metronome
                     </button>
+
+                    <button id="midiToggle" class="control-btn">
+                        <i class="fas fa-keyboard"></i> MIDI Input
+                    </button>
                 </div>
             </div>
 
@@ -179,6 +183,13 @@
                     <button id="clearAllTracksBtn" class="control-btn">
                         <i class="fas fa-trash-alt"></i> Xóa Tất Cả
                     </button>
+                    <button id="exportTracksBtn" class="control-btn">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <label for="importTracksInput" class="control-btn" style="cursor:pointer;">
+                        <i class="fas fa-upload"></i> Import
+                        <input id="importTracksInput" type="file" accept="application/json" style="display:none;" />
+                    </label>
                 </div>
                 <div class="tracks-info">
                     <div id="tracksInfo">Track 1: 0 nốt | Track 2: 0 nốt | Track 3: 0 nốt</div>
