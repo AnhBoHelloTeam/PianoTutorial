@@ -85,15 +85,18 @@ class SongPlayer {
             stopBtn.addEventListener('click', () => this.stop());
         }
 
-        // Speed controls
-        const slowBtn = document.getElementById('slowBtn');
-        if (slowBtn) {
-            slowBtn.addEventListener('click', () => this.setSpeed(0.5));
-        }
-
-        const normalBtn = document.getElementById('normalBtn');
-        if (normalBtn) {
-            normalBtn.addEventListener('click', () => this.setSpeed(1));
+        // Tempo slider
+        const tempoSlider = document.getElementById('tempoSlider');
+        const tempoValue = document.getElementById('tempoValue');
+        if (tempoSlider) {
+            const updateTempo = () => {
+                const percent = parseInt(tempoSlider.value, 10);
+                const speed = percent / 100; // 50%..150% -> 0.5..1.5
+                this.setSpeed(speed);
+                if (tempoValue) tempoValue.textContent = `${percent}%`;
+            };
+            tempoSlider.addEventListener('input', updateTempo);
+            updateTempo();
         }
 
         // Close player
@@ -143,21 +146,45 @@ class SongPlayer {
         // Search & filter
         const searchInput = document.getElementById('songSearchInput');
         const difficultySelect = document.getElementById('songDifficultyFilter');
+        const favoritesOnlyToggle = document.getElementById('favoritesOnlyToggle');
+        const getFavs = () => JSON.parse(localStorage.getItem('pv-favorites') || '[]');
+        const setFavs = (arr) => localStorage.setItem('pv-favorites', JSON.stringify(arr));
         const filterFn = () => {
             const q = (searchInput?.value || '').toLowerCase();
             const diff = (difficultySelect?.value || 'all');
+            const favs = new Set(getFavs());
             document.querySelectorAll('.song-card').forEach(card => {
                 const title = card.querySelector('.song-info h3')?.textContent?.toLowerCase() || '';
                 const diffEl = card.querySelector('.difficulty');
                 const cardDiff = (diffEl?.classList?.contains('easy') && 'easy') || (diffEl?.classList?.contains('medium') && 'medium') || (diffEl?.classList?.contains('hard') && 'hard') || 'all';
+                const id = card.getAttribute('data-song');
                 const matchText = !q || title.includes(q);
                 const matchDiff = diff === 'all' || diff === cardDiff;
-                card.style.display = (matchText && matchDiff) ? '' : 'none';
+                const matchFav = !favoritesOnlyToggle?.checked || favs.has(id);
+                card.style.display = (matchText && matchDiff && matchFav) ? '' : 'none';
             });
         };
         if (searchInput) searchInput.addEventListener('input', window.PianoUtils?.debounce?.(filterFn, 150) || filterFn);
         if (difficultySelect) difficultySelect.addEventListener('change', filterFn);
+        if (favoritesOnlyToggle) favoritesOnlyToggle.addEventListener('change', filterFn);
         filterFn();
+
+        // Favorite buttons
+        document.querySelectorAll('.favorite-song-btn').forEach(btn => {
+            const id = btn.getAttribute('data-song');
+            const refreshBtn = () => {
+                const favs = new Set(getFavs());
+                btn.classList.toggle('active', favs.has(id));
+            };
+            refreshBtn();
+            btn.addEventListener('click', () => {
+                const favs = new Set(getFavs());
+                if (favs.has(id)) favs.delete(id); else favs.add(id);
+                setFavs(Array.from(favs));
+                refreshBtn();
+                filterFn();
+            });
+        });
     }
 
     loadSong(songId) {

@@ -686,6 +686,7 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
+    position: relative;
 }
 
 .song-card:hover {
@@ -758,6 +759,19 @@ body {
     gap: 8px;
     margin: 0 auto;
 }
+
+.favorite-song-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: #e11d48;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.favorite-song-btn.active { filter: drop-shadow(0 0 6px rgba(225, 29, 72, 0.6)); }
 
 .play-song-btn:hover {
     transform: translateY(-2px);

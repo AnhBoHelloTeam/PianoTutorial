@@ -66,6 +66,9 @@
                         <option value="medium">Trung bình</option>
                         <option value="hard">Khó</option>
                     </select>
+                    <label style="display:flex;align-items:center;gap:8px;">
+                        <input id="favoritesOnlyToggle" type="checkbox" /> Yêu thích
+                    </label>
                 </div>
             </div>
 
@@ -81,6 +84,9 @@
                             <span class="difficulty easy">Dễ</span>
                         </div>
                     </div>
+                    <button class="favorite-song-btn" title="Yêu thích" data-song="twinkle">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <button class="play-song-btn" data-song="twinkle">
                         <i class="fas fa-play"></i> Chơi
                     </button>
@@ -97,6 +103,9 @@
                             <span class="difficulty easy">Dễ</span>
                         </div>
                     </div>
+                    <button class="favorite-song-btn" title="Yêu thích" data-song="happy">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <button class="play-song-btn" data-song="happy">
                         <i class="fas fa-play"></i> Chơi
                     </button>
@@ -113,6 +122,9 @@
                             <span class="difficulty easy">Dễ</span>
                         </div>
                     </div>
+                    <button class="favorite-song-btn" title="Yêu thích" data-song="mary">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <button class="play-song-btn" data-song="mary">
                         <i class="fas fa-play"></i> Chơi
                     </button>
@@ -129,6 +141,9 @@
                             <span class="difficulty medium">Trung bình</span>
                         </div>
                     </div>
+                    <button class="favorite-song-btn" title="Yêu thích" data-song="fur-elise">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <button class="play-song-btn" data-song="fur-elise">
                         <i class="fas fa-play"></i> Chơi
                     </button>
@@ -145,6 +160,9 @@
                             <span class="difficulty medium">Trung bình</span>
                         </div>
                     </div>
+                    <button class="favorite-song-btn" title="Yêu thích" data-song="lac-troi">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <button class="play-song-btn" data-song="lac-troi">
                         <i class="fas fa-play"></i> Chơi
                     </button>
@@ -161,6 +179,9 @@
                             <span class="difficulty medium">Trung bình</span>
                         </div>
                     </div>
+                    <button class="favorite-song-btn" title="Yêu thích" data-song="hay-trao-cho-anh">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <button class="play-song-btn" data-song="hay-trao-cho-anh">
                         <i class="fas fa-play"></i> Chơi
                     </button>
@@ -177,6 +198,9 @@
                             <span class="difficulty medium">Trung bình</span>
                         </div>
                     </div>
+                    <button class="favorite-song-btn" title="Yêu thích" data-song="chung-ta-cua-hien-tai">
+                        <i class="fas fa-heart"></i>
+                    </button>
                     <button class="play-song-btn" data-song="chung-ta-cua-hien-tai">
                         <i class="fas fa-play"></i> Chơi
                     </button>
@@ -215,12 +239,11 @@
                     <button class="control-btn" id="stopBtn">
                         <i class="fas fa-stop"></i>
                     </button>
-                    <button class="control-btn" id="slowBtn">
-                        <i class="fas fa-turtle"></i> Chậm
-                    </button>
-                    <button class="control-btn" id="normalBtn">
-                        <i class="fas fa-play"></i> Bình thường
-                    </button>
+                    <label class="control-btn" style="gap:10px;">
+                        <i class="fas fa-gauge-high"></i> Tempo
+                        <input type="range" id="tempoSlider" min="50" max="150" value="100" />
+                        <span id="tempoValue">100%</span>
+                    </label>
                     <label class="control-btn" style="gap:8px;">
                         <input type="checkbox" id="tutorModeToggle" style="accent-color:#667eea;"> Tutor mode
                     </label>
