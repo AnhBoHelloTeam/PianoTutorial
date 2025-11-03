@@ -156,6 +156,10 @@ function highlightKey(note) {
 function playNoteWithVisual(note) {
     playNote(note);
     highlightKey(note);
+    try {
+        const ev = new CustomEvent('user-played-note', { detail: { note } });
+        window.dispatchEvent(ev);
+    } catch (e) { /* no-op */ }
 }
 
 // Format time in MM:SS format

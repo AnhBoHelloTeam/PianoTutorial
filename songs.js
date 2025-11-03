@@ -7,6 +7,9 @@ class SongPlayer {
         this.currentNoteIndex = 0;
         this.playbackSpeed = 1;
         this.timeouts = [];
+        this.tutorMode = false;
+        this.correctCount = 0;
+        this.totalNotes = 0;
         
         this.songs = {
             'twinkle': {
@@ -98,6 +101,35 @@ class SongPlayer {
         if (closePlayer) {
             closePlayer.addEventListener('click', () => this.closePlayer());
         }
+
+        const tutorToggle = document.getElementById('tutorModeToggle');
+        if (tutorToggle) {
+            tutorToggle.addEventListener('change', (e) => {
+                this.tutorMode = !!e.target.checked;
+                window.PianoUtils?.showNotification?.(this.tutorMode ? 'Tutor mode: ON' : 'Tutor mode: OFF', this.tutorMode ? 'success' : 'info');
+            });
+        }
+
+        // Listen to user-played notes from global piano handlers
+        window.addEventListener('user-played-note', (ev) => {
+            if (!this.tutorMode || !this.currentSong || !this.isPlaying) return;
+            const played = ev.detail?.note;
+            const expected = this.currentSong.notes[this.currentNoteIndex];
+            if (!expected) return;
+            if (played === expected) {
+                this.correctCount++;
+                this.currentNoteIndex++;
+                this.updateProgress();
+                this.updateCurrentNote(played);
+                this.updateNextNote(this.currentNoteIndex);
+                if (this.currentNoteIndex >= this.currentSong.notes.length) {
+                    this.finishTutor();
+                }
+            } else {
+                // brief visual feedback
+                window.PianoUtils?.showNotification?.(`Sai nốt: ${played}. Kỳ vọng: ${expected}`, 'error');
+            }
+        });
     }
 
     setupSongCards() {
@@ -118,6 +150,8 @@ class SongPlayer {
         this.currentSong = this.songs[songId];
         this.currentNoteIndex = 0;
         this.isPlaying = false;
+        this.correctCount = 0;
+        this.totalNotes = this.currentSong.notes.length;
         
         // Show player
         const player = document.getElementById('songPlayer');
@@ -155,8 +189,16 @@ class SongPlayer {
 
         this.isPlaying = true;
         this.updatePlayButton();
-        
-        // Play notes with delays
+
+        if (this.tutorMode) {
+            // Tutor: chờ người chơi bấm đúng từng nốt, không dùng timeouts
+            this.updateCurrentNote('-');
+            this.updateNextNote(this.currentNoteIndex);
+            window.PianoUtils?.showNotification?.('Tutor mode: hãy bấm nốt tiếp theo đúng thứ tự', 'info');
+            return;
+        }
+
+        // Auto-play: theo delays
         this.currentSong.notes.forEach((note, index) => {
             if (index >= this.currentNoteIndex) {
                 const delay = this.currentSong.delays[index] / this.playbackSpeed;
@@ -171,7 +213,6 @@ class SongPlayer {
             }
         });
 
-        // Auto-stop when song ends
         const totalDuration = Math.max(...this.currentSong.delays) / this.playbackSpeed;
         const endTimeout = setTimeout(() => {
             this.stop();
@@ -194,6 +235,13 @@ class SongPlayer {
         this.updateProgress();
         this.updateCurrentNote('-');
         this.updateNextNote('-');
+    }
+
+    finishTutor() {
+        this.isPlaying = false;
+        this.updatePlayButton();
+        const score = Math.round((this.correctCount / this.totalNotes) * 100);
+        window.PianoUtils?.showNotification?.(`Hoàn thành! Độ chính xác: ${score}%`, 'success');
     }
 
     setSpeed(speed) {
