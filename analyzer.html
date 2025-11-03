@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Virtual - Phân Tích Âm Thanh</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-music"></i>
+                <span>Piano Virtual</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i> Trang Chủ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="piano.html" class="nav-link">
+                        <i class="fas fa-piano-keyboard"></i> Piano
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="songs.html" class="nav-link">
+                        <i class="fas fa-music"></i> Bài Mẫu
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="karaoke.html" class="nav-link">
+                        <i class="fas fa-microphone-alt"></i> Karaoke
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyzer.html" class="nav-link active">
+                        <i class="fas fa-microphone"></i> Phân Tích Âm Thanh
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content analyzer-page">
+        <div class="analyzer-container">
+            <div class="analyzer-header">
+                <h1>Phân Tích Âm Thanh</h1>
+                <p>Tải lên file âm thanh hoặc ghi âm trực tiếp để phân tích thành nốt nhạc piano</p>
+            </div>
+
+            <div class="analyzer-options">
+                <div class="option-card" id="uploadOption">
+                    <div class="option-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h3>Tải lên file</h3>
+                    <p>Chọn file âm thanh từ máy tính</p>
+                    <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+                    <button class="option-btn" onclick="document.getElementById('audioFile').click()">
+                        Chọn file
+                    </button>
+                </div>
+
+                <div class="option-card" id="recordOption">
+                    <div class="option-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3>Ghi âm trực tiếp</h3>
+                    <p>Ghi âm bằng microphone</p>
+                    <button class="option-btn" id="recordBtn">
+                        <i class="fas fa-circle"></i> Bắt đầu ghi âm
+                    </button>
+                </div>
+            </div>
+
+            <div class="analyzer-workspace" id="analyzerWorkspace" style="display: none;">
+                <div class="workspace-header">
+                    <h2>Phân tích âm thanh</h2>
+                    <div class="workspace-controls">
+                        <button class="control-btn" id="playOriginalBtn" disabled>
+                            <i class="fas fa-play"></i> Phát gốc
+                        </button>
+                        <button class="control-btn" id="analyzeBtn">
+                            <i class="fas fa-cogs"></i> Phân tích
+                        </button>
+                        <button class="control-btn" id="playPianoBtn" disabled>
+                            <i class="fas fa-piano-keyboard"></i> Phát piano
+                        </button>
+                    </div>
+                </div>
+
+                <div class="audio-visualizer">
+                    <canvas id="audioCanvas" width="800" height="200"></canvas>
+                </div>
+
+                <div class="analysis-progress" id="analysisProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress" id="analysisProgressBar"></div>
+                    </div>
+                    <p id="progressText">Đang phân tích...</p>
+                </div>
+
+                <div class="analysis-results" id="analysisResults" style="display: none;">
+                    <h3>Kết quả phân tích</h3>
+                    <div class="notes-sequence" id="notesSequence">
+                        <!-- Notes will be displayed here -->
+                    </div>
+                    <div class="results-controls">
+                        <button class="control-btn" id="exportBtn">
+                            <i class="fas fa-download"></i> Xuất kết quả
+                        </button>
+                        <button class="control-btn" id="playSequenceBtn">
+                            <i class="fas fa-play"></i> Phát chuỗi nốt
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="piano-preview">
+                <h3>Piano Preview</h3>
+                <div class="piano-keys-mini">
+                    <div class="key white-key" data-note="C4">
+                        <span class="key-label">C</span>
+                    </div>
+                    <div class="key white-key" data-note="D4">
+                        <span class="key-label">D</span>
+                    </div>
+                    <div class="key white-key" data-note="E4">
+                        <span class="key-label">E</span>
+                    </div>
+                    <div class="key white-key" data-note="F4">
+                        <span class="key-label">F</span>
+                    </div>
+                    <div class="key white-key" data-note="G4">
+                        <span class="key-label">G</span>
+                    </div>
+                    <div class="key white-key" data-note="A4">
+                        <span class="key-label">A</span>
+                    </div>
+                    <div class="key white-key" data-note="B4">
+                        <span class="key-label">B</span>
+                    </div>
+                    <div class="key white-key" data-note="C5">
+                        <span class="key-label">C</span>
+                    </div>
+
+                    <div class="key black-key" data-note="C#4">
+                        <span class="key-label">C#</span>
+                    </div>
+                    <div class="key black-key" data-note="D#4">
+                        <span class="key-label">D#</span>
+                    </div>
+                    <div class="key black-key" data-note="F#4">
+                        <span class="key-label">F#</span>
+                    </div>
+                    <div class="key black-key" data-note="G#4">
+                        <span class="key-label">G#</span>
+                    </div>
+                    <div class="key black-key" data-note="A#4">
+                        <span class="key-label">A#</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analyzer-info">
+                <div class="info-card">
+                    <h4><i class="fas fa-info-circle"></i> Hướng dẫn sử dụng</h4>
+                    <ul>
+                        <li>Tải lên file âm thanh (MP3, WAV, M4A) hoặc ghi âm trực tiếp</li>
+                        <li>Nhấn "Phân tích" để chuyển đổi âm thanh thành nốt nhạc</li>
+                        <li>Xem kết quả và phát lại bằng piano ảo</li>
+                        <li>Xuất kết quả để lưu trữ hoặc chia sẻ</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card">
+                    <h4><i class="fas fa-lightbulb"></i> Mẹo để có kết quả tốt</h4>
+                    <ul>
+                        <li>Sử dụng file âm thanh chất lượng cao</li>
+                        <li>Âm thanh rõ ràng, không có nhiều tạp âm</li>
+                        <li>Melody đơn giản sẽ cho kết quả chính xác hơn</li>
+                        <li>Thời lượng ngắn (dưới 30 giây) để xử lý nhanh</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio elements -->
+        <div class="audio-container">
+            <audio data-note="C4" src="./Piano/40.mp3"></audio>
+            <audio data-note="C#4" src="./Piano/41.mp3"></audio>
+            <audio data-note="D4" src="./Piano/42.mp3"></audio>
+            <audio data-note="D#4" src="./Piano/43.mp3"></audio>
+            <audio data-note="E4" src="./Piano/44.mp3"></audio>
+            <audio data-note="F4" src="./Piano/45.mp3"></audio>
+            <audio data-note="F#4" src="./Piano/46.mp3"></audio>
+            <audio data-note="G4" src="./Piano/47.mp3"></audio>
+            <audio data-note="G#4" src="./Piano/48.mp3"></audio>
+            <audio data-note="A4" src="./Piano/49.mp3"></audio>
+            <audio data-note="A#4" src="./Piano/50.mp3"></audio>
+            <audio data-note="B4" src="./Piano/51.mp3"></audio>
+            <audio data-note="C5" src="./Piano/52.mp3"></audio>
+            <audio data-note="C#5" src="./Piano/53.mp3"></audio>
+            <audio data-note="D5" src="./Piano/54.mp3"></audio>
+            <audio data-note="D#5" src="./Piano/55.mp3"></audio>
+        </div>
+    </main>
+
+    <script src="analyzer.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

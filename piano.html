@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Virtual - Piano</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-music"></i>
+                <span>Piano Virtual</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i> Trang Chủ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="piano.html" class="nav-link active">
+                        <i class="fas fa-piano-keyboard"></i> Piano
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="songs.html" class="nav-link">
+                        <i class="fas fa-music"></i> Bài Mẫu
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="karaoke.html" class="nav-link">
+                        <i class="fas fa-microphone-alt"></i> Karaoke
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyzer.html" class="nav-link">
+                        <i class="fas fa-microphone"></i> Phân Tích Âm Thanh
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content piano-page">
+        <div class="piano-container">
+            <div class="piano-header">
+                <h1>Piano Virtual</h1>
+                <p>Nhấn phím trên bàn phím hoặc click chuột để chơi</p>
+                <div class="piano-controls">
+                    <button id="recordBtn" class="control-btn">
+                        <i class="fas fa-circle"></i> Ghi âm
+                    </button>
+                    <button id="playBtn" class="control-btn" disabled>
+                        <i class="fas fa-play"></i> Phát lại
+                    </button>
+                    <button id="clearBtn" class="control-btn">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                    <label class="control-btn" style="gap:10px;">
+                        <i class="fas fa-sliders-h"></i> Octave
+                        <select id="octaveSelect" style="border:none;background:transparent;color:#fff;font-weight:600;">
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4" selected>4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </label>
+
+                    <label class="control-btn" style="gap:10px;">
+                        <i class="fas fa-volume-up"></i> BPM
+                        <input id="metronomeBpm" type="number" min="30" max="240" value="100" style="width:70px;border:none;background:transparent;color:#fff;font-weight:600;" />
+                    </label>
+                    <label class="control-btn" style="gap:10px;">
+                        <i class="fas fa-drum"></i> Nhịp
+                        <select id="metronomeSignature" style="border:none;background:transparent;color:#fff;font-weight:600;">
+                            <option value="4">4/4</option>
+                            <option value="3">3/4</option>
+                        </select>
+                    </label>
+                    <button id="metronomeToggle" class="control-btn">
+                        <i class="fas fa-play"></i> Metronome
+                    </button>
+                </div>
+            </div>
+
+            <div class="piano-wrapper">
+                <div class="piano">
+                    <!-- White keys -->
+                    <div class="key white-key" data-note="C4" data-key="a">
+                        <span class="key-label">A</span>
+                    </div>
+                    <div class="key white-key" data-note="D4" data-key="s">
+                        <span class="key-label">S</span>
+                    </div>
+                    <div class="key white-key" data-note="E4" data-key="d">
+                        <span class="key-label">D</span>
+                    </div>
+                    <div class="key white-key" data-note="F4" data-key="f">
+                        <span class="key-label">F</span>
+                    </div>
+                    <div class="key white-key" data-note="G4" data-key="g">
+                        <span class="key-label">G</span>
+                    </div>
+                    <div class="key white-key" data-note="A4" data-key="h">
+                        <span class="key-label">H</span>
+                    </div>
+                    <div class="key white-key" data-note="B4" data-key="j">
+                        <span class="key-label">J</span>
+                    </div>
+                    <div class="key white-key" data-note="C5" data-key="k">
+                        <span class="key-label">K</span>
+                    </div>
+                    <div class="key white-key" data-note="D5" data-key="l">
+                        <span class="key-label">L</span>
+                    </div>
+
+                    <!-- Black keys -->
+                    <div class="key black-key" data-note="C#4" data-key="w">
+                        <span class="key-label">W</span>
+                    </div>
+                    <div class="key black-key" data-note="D#4" data-key="e">
+                        <span class="key-label">E</span>
+                    </div>
+                    <div class="key black-key" data-note="F#4" data-key="t">
+                        <span class="key-label">T</span>
+                    </div>
+                    <div class="key black-key" data-note="G#4" data-key="y">
+                        <span class="key-label">Y</span>
+                    </div>
+                    <div class="key black-key" data-note="A#4" data-key="u">
+                        <span class="key-label">U</span>
+                    </div>
+                    <div class="key black-key" data-note="C#5" data-key="o">
+                        <span class="key-label">O</span>
+                    </div>
+                    <div class="key black-key" data-note="D#5" data-key="p">
+                        <span class="key-label">P</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="piano-info">
+                <div class="current-note">
+                    <span>Nốt hiện tại: </span>
+                    <span id="currentNote">-</span>
+                </div>
+                <div class="recording-status">
+                    <span id="recordingStatus">Sẵn sàng ghi âm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio elements for each note -->
+        <div class="audio-container">
+            <audio data-note="C4" src="./Piano/40.mp3"></audio>
+            <audio data-note="C#4" src="./Piano/41.mp3"></audio>
+            <audio data-note="D4" src="./Piano/42.mp3"></audio>
+            <audio data-note="D#4" src="./Piano/43.mp3"></audio>
+            <audio data-note="E4" src="./Piano/44.mp3"></audio>
+            <audio data-note="F4" src="./Piano/45.mp3"></audio>
+            <audio data-note="F#4" src="./Piano/46.mp3"></audio>
+            <audio data-note="G4" src="./Piano/47.mp3"></audio>
+            <audio data-note="G#4" src="./Piano/48.mp3"></audio>
+            <audio data-note="A4" src="./Piano/49.mp3"></audio>
+            <audio data-note="A#4" src="./Piano/50.mp3"></audio>
+            <audio data-note="B4" src="./Piano/51.mp3"></audio>
+            <audio data-note="C5" src="./Piano/52.mp3"></audio>
+            <audio data-note="C#5" src="./Piano/53.mp3"></audio>
+            <audio data-note="D5" src="./Piano/54.mp3"></audio>
+            <audio data-note="D#5" src="./Piano/55.mp3"></audio>
+        </div>
+    </main>
+
+    <script src="piano.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

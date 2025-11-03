@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Virtual - Bài Mẫu</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-music"></i>
+                <span>Piano Virtual</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i> Trang Chủ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="piano.html" class="nav-link">
+                        <i class="fas fa-piano-keyboard"></i> Piano
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="songs.html" class="nav-link active">
+                        <i class="fas fa-music"></i> Bài Mẫu
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="karaoke.html" class="nav-link">
+                        <i class="fas fa-microphone-alt"></i> Karaoke
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyzer.html" class="nav-link">
+                        <i class="fas fa-microphone"></i> Phân Tích Âm Thanh
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content songs-page">
+        <div class="songs-container">
+            <div class="songs-header">
+                <h1>Bài Mẫu Piano</h1>
+                <p>Chọn một bài hát để học và chơi theo hướng dẫn</p>
+            </div>
+
+            <div class="songs-grid">
+                <div class="song-card" data-song="twinkle">
+                    <div class="song-cover">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Twinkle Twinkle Little Star</h3>
+                        <p>Bài hát thiếu nhi nổi tiếng</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty easy">Dễ</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="twinkle">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+
+                <div class="song-card" data-song="happy">
+                    <div class="song-cover">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Happy Birthday</h3>
+                        <p>Chúc mừng sinh nhật</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty easy">Dễ</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="happy">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+
+                <div class="song-card" data-song="mary">
+                    <div class="song-cover">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Mary Had a Little Lamb</h3>
+                        <p>Bài hát dân gian Mỹ</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty easy">Dễ</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="mary">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+
+                <div class="song-card" data-song="fur-elise">
+                    <div class="song-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Für Elise</h3>
+                        <p>Bản nhạc cổ điển của Beethoven</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty medium">Trung bình</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="fur-elise">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+
+                <div class="song-card" data-song="lac-troi">
+                    <div class="song-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Lạc Trôi (Sơn Tùng)</h3>
+                        <p>Melody rút gọn để luyện ngón</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty medium">Trung bình</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="lac-troi">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+
+                <div class="song-card" data-song="hay-trao-cho-anh">
+                    <div class="song-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Hãy Trao Cho Anh (Sơn Tùng)</h3>
+                        <p>Melody rút gọn để luyện nhịp</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty medium">Trung bình</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="hay-trao-cho-anh">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+
+                <div class="song-card" data-song="chung-ta-cua-hien-tai">
+                    <div class="song-cover">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Chúng Ta Của Hiện Tại (Sơn Tùng)</h3>
+                        <p>Melody rút gọn luyện giai điệu</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty medium">Trung bình</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="chung-ta-cua-hien-tai">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+
+                <div class="song-card" data-song="long-song">
+                    <div class="song-cover">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="song-info">
+                        <h3>Bài Hát Dài</h3>
+                        <p>Bài hát từ file có sẵn với nhiều nốt nhạc</p>
+                        <div class="song-difficulty">
+                            <span class="difficulty medium">Trung bình</span>
+                        </div>
+                    </div>
+                    <button class="play-song-btn" data-song="long-song">
+                        <i class="fas fa-play"></i> Chơi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Song Player -->
+            <div class="song-player" id="songPlayer" style="display: none;">
+                <div class="player-header">
+                    <h2 id="currentSongTitle">Đang chơi: </h2>
+                    <button class="close-player" id="closePlayer">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="player-controls">
+                    <button class="control-btn" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="control-btn" id="stopBtn">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                    <button class="control-btn" id="slowBtn">
+                        <i class="fas fa-turtle"></i> Chậm
+                    </button>
+                    <button class="control-btn" id="normalBtn">
+                        <i class="fas fa-play"></i> Bình thường
+                    </button>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+                    </div>
+                </div>
+
+                <div class="piano-keys-mini">
+                    <div class="key white-key" data-note="C4">
+                        <span class="key-label">C</span>
+                    </div>
+                    <div class="key white-key" data-note="D4">
+                        <span class="key-label">D</span>
+                    </div>
+                    <div class="key white-key" data-note="E4">
+                        <span class="key-label">E</span>
+                    </div>
+                    <div class="key white-key" data-note="F4">
+                        <span class="key-label">F</span>
+                    </div>
+                    <div class="key white-key" data-note="G4">
+                        <span class="key-label">G</span>
+                    </div>
+                    <div class="key white-key" data-note="A4">
+                        <span class="key-label">A</span>
+                    </div>
+                    <div class="key white-key" data-note="B4">
+                        <span class="key-label">B</span>
+                    </div>
+                    <div class="key white-key" data-note="C5">
+                        <span class="key-label">C</span>
+                    </div>
+
+                    <div class="key black-key" data-note="C#4">
+                        <span class="key-label">C#</span>
+                    </div>
+                    <div class="key black-key" data-note="D#4">
+                        <span class="key-label">D#</span>
+                    </div>
+                    <div class="key black-key" data-note="F#4">
+                        <span class="key-label">F#</span>
+                    </div>
+                    <div class="key black-key" data-note="G#4">
+                        <span class="key-label">G#</span>
+                    </div>
+                    <div class="key black-key" data-note="A#4">
+                        <span class="key-label">A#</span>
+                    </div>
+                </div>
+
+                <div class="current-note-display">
+                    <div class="note-indicator" id="currentNoteIndicator">
+                        <span id="currentNoteText">-</span>
+                    </div>
+                    <p>Nốt tiếp theo: <span id="nextNoteText">-</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio elements -->
+        <div class="audio-container">
+            <audio data-note="C4" src="./Piano/40.mp3"></audio>
+            <audio data-note="C#4" src="./Piano/41.mp3"></audio>
+            <audio data-note="D4" src="./Piano/42.mp3"></audio>
+            <audio data-note="D#4" src="./Piano/43.mp3"></audio>
+            <audio data-note="E4" src="./Piano/44.mp3"></audio>
+            <audio data-note="F4" src="./Piano/45.mp3"></audio>
+            <audio data-note="F#4" src="./Piano/46.mp3"></audio>
+            <audio data-note="G4" src="./Piano/47.mp3"></audio>
+            <audio data-note="G#4" src="./Piano/48.mp3"></audio>
+            <audio data-note="A4" src="./Piano/49.mp3"></audio>
+            <audio data-note="A#4" src="./Piano/50.mp3"></audio>
+            <audio data-note="B4" src="./Piano/51.mp3"></audio>
+            <audio data-note="C5" src="./Piano/52.mp3"></audio>
+            <audio data-note="C#5" src="./Piano/53.mp3"></audio>
+            <audio data-note="D5" src="./Piano/54.mp3"></audio>
+            <audio data-note="D#5" src="./Piano/55.mp3"></audio>
+        </div>
+    </main>
+
+    <script src="songs.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

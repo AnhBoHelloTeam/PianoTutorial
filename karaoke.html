@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Virtual - Karaoke</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&family=Great+Vibes&family=Italianno&display=swap" rel="stylesheet">
+    <style>
+        .karaoke-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: calc(100vh - 70px);
+            padding: 40px 0;
+        }
+        
+        .karaoke-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .karaoke-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .karaoke-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .karaoke-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .karaoke-display {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            min-height: 400px;
+            color: #e5e5e5;
+            font-family: "Exo", sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .karaoke-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .lyrics-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .lyrics-line {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .lyrics-line.active {
+            opacity: 1;
+            color: #ffeb3b;
+            font-weight: 600;
+            background: rgba(255, 235, 59, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .lyrics-line.completed {
+            opacity: 0.8;
+            color: #4caf50;
+        }
+        
+        .song-selector {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .song-selector h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .song-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .song-option {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .song-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .song-option.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #ffeb3b, #ffc107);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .time-display {
+            text-align: center;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .piano-mini {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .piano-mini h4 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .piano-keys-mini {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .piano-keys-mini .key {
+            margin-right: 1px;
+        }
+        
+        .piano-keys-mini .white-key {
+            width: 30px;
+            height: 80px;
+            font-size: 0.6rem;
+        }
+        
+        .piano-keys-mini .black-key {
+            width: 18px;
+            height: 50px;
+            margin: 0 -9px;
+            font-size: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-music"></i>
+                <span>Piano Virtual</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i> Trang Chủ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="piano.html" class="nav-link">
+                        <i class="fas fa-piano-keyboard"></i> Piano
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="songs.html" class="nav-link">
+                        <i class="fas fa-music"></i> Bài Mẫu
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="karaoke.html" class="nav-link active">
+                        <i class="fas fa-microphone-alt"></i> Karaoke
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="analyzer.html" class="nav-link">
+                        <i class="fas fa-microphone"></i> Phân Tích Âm Thanh
+                    </a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="karaoke-container">
+            <div class="karaoke-content">
+                <div class="karaoke-header">
+                    <h1>Karaoke Piano</h1>
+                    <p>Hát theo lời bài hát với piano ảo</p>
+                </div>
+
+                <div class="song-selector">
+                    <h3>Chọn bài hát</h3>
+                    <div class="song-options">
+                        <button class="song-option" data-song="lyrics-song">
+                            <i class="fas fa-heart"></i> Bài Hát Có Lời
+                        </button>
+                        <button class="song-option" data-song="twinkle">
+                            <i class="fas fa-star"></i> Twinkle Twinkle
+                        </button>
+                        <button class="song-option" data-song="happy">
+                            <i class="fas fa-birthday-cake"></i> Happy Birthday
+                        </button>
+                    </div>
+                </div>
+
+                <div class="karaoke-controls">
+                    <button class="control-btn" id="playKaraokeBtn">
+                        <i class="fas fa-play"></i> Bắt đầu
+                    </button>
+                    <button class="control-btn" id="pauseKaraokeBtn" disabled>
+                        <i class="fas fa-pause"></i> Tạm dừng
+                    </button>
+                    <button class="control-btn" id="stopKaraokeBtn" disabled>
+                        <i class="fas fa-stop"></i> Dừng
+                    </button>
+                    <button class="control-btn" id="resetKaraokeBtn">
+                        <i class="fas fa-redo"></i> Làm lại
+                    </button>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress" id="karaokeProgress"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="karaokeCurrentTime">0:00</span> / <span id="karaokeTotalTime">0:00</span>
+                    </div>
+                </div>
+
+                <div class="karaoke-display">
+                    <div class="lyrics-container" id="lyricsContainer">
+                        <p style="text-align: center; font-size: 1.5rem; color: #ffeb3b;">
+                            Chọn một bài hát để bắt đầu karaoke
+                        </p>
+                    </div>
+                </div>
+
+                <div class="piano-mini">
+                    <h4>Piano Mini</h4>
+                    <div class="piano-keys-mini">
+                        <div class="key white-key" data-note="C4">
+                            <span class="key-label">C</span>
+                        </div>
+                        <div class="key white-key" data-note="D4">
+                            <span class="key-label">D</span>
+                        </div>
+                        <div class="key white-key" data-note="E4">
+                            <span class="key-label">E</span>
+                        </div>
+                        <div class="key white-key" data-note="F4">
+                            <span class="key-label">F</span>
+                        </div>
+                        <div class="key white-key" data-note="G4">
+                            <span class="key-label">G</span>
+                        </div>
+                        <div class="key white-key" data-note="A4">
+                            <span class="key-label">A</span>
+                        </div>
+                        <div class="key white-key" data-note="B4">
+                            <span class="key-label">B</span>
+                        </div>
+                        <div class="key white-key" data-note="C5">
+                            <span class="key-label">C</span>
+                        </div>
+
+                        <div class="key black-key" data-note="C#4">
+                            <span class="key-label">C#</span>
+                        </div>
+                        <div class="key black-key" data-note="D#4">
+                            <span class="key-label">D#</span>
+                        </div>
+                        <div class="key black-key" data-note="F#4">
+                            <span class="key-label">F#</span>
+                        </div>
+                        <div class="key black-key" data-note="G#4">
+                            <span class="key-label">G#</span>
+                        </div>
+                        <div class="key black-key" data-note="A#4">
+                            <span class="key-label">A#</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio elements -->
+        <div class="audio-container">
+            <audio data-note="C4" src="./Piano/40.mp3"></audio>
+            <audio data-note="C#4" src="./Piano/41.mp3"></audio>
+            <audio data-note="D4" src="./Piano/42.mp3"></audio>
+            <audio data-note="D#4" src="./Piano/43.mp3"></audio>
+            <audio data-note="E4" src="./Piano/44.mp3"></audio>
+            <audio data-note="F4" src="./Piano/45.mp3"></audio>
+            <audio data-note="F#4" src="./Piano/46.mp3"></audio>
+            <audio data-note="G4" src="./Piano/47.mp3"></audio>
+            <audio data-note="G#4" src="./Piano/48.mp3"></audio>
+            <audio data-note="A4" src="./Piano/49.mp3"></audio>
+            <audio data-note="A#4" src="./Piano/50.mp3"></audio>
+            <audio data-note="B4" src="./Piano/51.mp3"></audio>
+            <audio data-note="C5" src="./Piano/52.mp3"></audio>
+            <audio data-note="C#5" src="./Piano/53.mp3"></audio>
+            <audio data-note="D5" src="./Piano/54.mp3"></audio>
+            <audio data-note="D#5" src="./Piano/55.mp3"></audio>
+        </div>
+    </main>
+
+    <script src="karaoke.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
