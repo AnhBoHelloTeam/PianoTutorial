@@ -81,14 +81,14 @@ class PianoRecorder {
         document.addEventListener('keydown', (e) => {
             if (e.repeat) return;
             if (e.key.toLowerCase() === 'z') {
-                this.currentOctave = Math.max(2, this.currentOctave - 1);
+                this.currentOctave = Math.max(0, this.currentOctave - 1);
                 if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
-                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave}`, 'info');
+                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (Z: giảm, X: tăng)`, 'info');
             }
             if (e.key.toLowerCase() === 'x') {
-                this.currentOctave = Math.min(6, this.currentOctave + 1);
+                this.currentOctave = Math.min(8, this.currentOctave + 1);
                 if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
-                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave}`, 'info');
+                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (Z: giảm, X: tăng)`, 'info');
             }
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -176,10 +176,10 @@ class PianoRecorder {
     }
 
     applyOctave(note) {
-        // note like C4, D#4
-        const match = note.match(/^(^[A-G](#)?)(\d)$/);
+        // note like C4, D#4, C#4
+        const match = note.match(/^([A-G]#?)(\d)$/);
         if (!match) return note;
-        const letter = match[1];
+        const letter = match[1]; // C, C#, D, etc.
         return `${letter}${this.currentOctave}`;
     }
 

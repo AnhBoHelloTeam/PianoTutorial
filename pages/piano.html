@@ -57,7 +57,7 @@
         <div class="piano-container">
             <div class="piano-header">
                 <h1>Piano Virtual</h1>
-                <p>Nhấn phím trên bàn phím hoặc click chuột để chơi</p>
+                <p>Nhấn phím trên bàn phím (A-S-D-F-G-H-J-K-L) hoặc click chuột để chơi | <strong>Z: giảm octave (trầm)</strong> | <strong>X: tăng octave (thanh)</strong> | <strong>Space: Sustain</strong></p>
                 <div class="piano-controls">
                     <button id="recordBtn" class="control-btn">
                         <i class="fas fa-circle"></i> Ghi âm
@@ -78,11 +78,15 @@
                     <label class="control-btn" style="gap:10px;">
                         <i class="fas fa-sliders-h"></i> Octave
                         <select id="octaveSelect" style="border:none;background:transparent;color:#fff;font-weight:600;">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
                             <option value="4" selected>4</option>
                             <option value="5">5</option>
                             <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
                         </select>
                     </label>
 
