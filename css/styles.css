@@ -406,15 +406,16 @@ body {
 }
 
 .piano-container {
-    max-width: 1000px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0;
 }
 
 .piano-header {
     text-align: center;
     color: white;
     margin-bottom: 40px;
+    padding: 0 20px;
 }
 
 .piano-header h1 {
@@ -434,6 +435,7 @@ body {
     gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
+    padding: 0 20px;
 }
 
 .control-btn {
@@ -467,22 +469,25 @@ body {
 
 .piano-wrapper {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin-bottom: 40px;
     width: 100%;
     overflow: hidden;
+    padding: 0;
 }
 
 .piano {
     display: flex;
     position: relative;
     background: #2c3e50;
-    padding: 20px;
-    border-radius: 15px;
+    padding: 15px 10px;
+    border-radius: 0;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    transform-origin: center top;
+    transform-origin: left top;
     transition: transform 0.3s ease;
-    margin: 0 auto;
+    margin: 0;
+    width: 100%;
+    min-width: fit-content;
 }
 
 .key {
@@ -551,6 +556,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     padding: 20px;
     border-radius: 15px;
+    margin: 0 20px 20px 20px;
     color: white;
     backdrop-filter: blur(10px);
     margin-bottom: 20px;

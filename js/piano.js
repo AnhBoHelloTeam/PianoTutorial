@@ -58,17 +58,23 @@ class PianoRecorder {
         const piano = document.querySelector('.piano');
         if (!pianoWrapper || !piano) return;
         
-        // Tính tổng width của 88 phím (52 phím trắng + 36 phím đen)
-        // Mỗi phím trắng ~60px, mỗi phím đen ~35px nhưng overlap
-        // Ước tính: 52 * 60 + padding = ~3120px
-        const estimatedWidth = 88 * 60; // Ước tính
-        const availableWidth = pianoWrapper.offsetWidth - 40; // Trừ padding
+        // Tính tổng width của 88 phím
+        // 52 phím trắng × 60px + 36 phím đen (overlap) ≈ 3120px
+        const whiteKeys = 52;
+        const blackKeys = 36;
+        const whiteKeyWidth = 60;
+        const estimatedWidth = whiteKeys * whiteKeyWidth + 20; // + padding
+        
+        // Lấy full width của wrapper (100vw - scrollbar)
+        const availableWidth = pianoWrapper.offsetWidth;
         
         if (availableWidth > 0 && estimatedWidth > availableWidth) {
             const scale = availableWidth / estimatedWidth;
             piano.style.transform = `scale(${Math.min(1, scale)})`;
+            piano.style.width = `${estimatedWidth}px`;
         } else {
             piano.style.transform = 'scale(1)';
+            piano.style.width = `${estimatedWidth}px`;
         }
     }
 
