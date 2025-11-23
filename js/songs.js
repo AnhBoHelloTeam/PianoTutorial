@@ -244,26 +244,34 @@ class SongPlayer {
             return;
         }
 
-        // Auto-play: theo delays
+        // Auto-play: theo delays (tính delay tương đối từ nốt trước)
+        const startTime = Date.now();
+        const startDelay = this.currentNoteIndex > 0 ? this.currentSong.delays[this.currentNoteIndex - 1] : 0;
+        
         this.currentSong.notes.forEach((note, index) => {
             if (index >= this.currentNoteIndex) {
-                const delay = this.currentSong.delays[index] / this.playbackSpeed;
+                const absoluteDelay = this.currentSong.delays[index];
+                const relativeDelay = (absoluteDelay - startDelay) / this.playbackSpeed;
+                
                 const timeout = setTimeout(() => {
-                    this.playNote(note);
-                    this.currentNoteIndex = index + 1;
-                    this.updateProgress();
-                    this.updateCurrentNote(note);
-                    this.updateNextNote(index + 1);
-                }, delay);
+                    if (this.isPlaying) { // Kiểm tra vẫn đang phát
+                        this.playNote(note);
+                        this.currentNoteIndex = index + 1;
+                        this.updateProgress();
+                        this.updateCurrentNote(note);
+                        this.updateNextNote(index + 1);
+                        
+                        // Nếu là nốt cuối, dừng sau 1 giây
+                        if (index === this.currentSong.notes.length - 1) {
+                            setTimeout(() => {
+                                if (this.isPlaying) this.stop();
+                            }, 1000);
+                        }
+                    }
+                }, Math.max(0, relativeDelay));
                 this.timeouts.push(timeout);
             }
         });
-
-        const totalDuration = Math.max(...this.currentSong.delays) / this.playbackSpeed;
-        const endTimeout = setTimeout(() => {
-            this.stop();
-        }, totalDuration + 1000);
-        this.timeouts.push(endTimeout);
     }
 
     pause() {

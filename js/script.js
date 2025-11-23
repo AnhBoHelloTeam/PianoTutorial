@@ -251,6 +251,40 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Generate all 88 piano notes (A0 to C8) and map to file numbers
+function generateAllNotes() {
+    const notes = [];
+    const noteNames = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+    let fileNum = 1;
+    
+    // A0, A#0, B0 (3 notes)
+    for (let i = 0; i < 3; i++) {
+        notes.push({ note: `${noteNames[i]}0`, file: fileNum++ });
+    }
+    
+    // C1 to B7 (7 octaves × 12 notes = 84 notes)
+    for (let octave = 1; octave <= 7; octave++) {
+        for (let i = 3; i < noteNames.length; i++) { // C to G#
+            notes.push({ note: `${noteNames[i]}${octave}`, file: fileNum++ });
+        }
+        for (let i = 0; i < 3; i++) { // A, A#, B
+            notes.push({ note: `${noteNames[i]}${octave}`, file: fileNum++ });
+        }
+    }
+    
+    // C8 (1 note, last)
+    notes.push({ note: 'C8', file: fileNum++ });
+    
+    return notes;
+}
+
+// Map note name to file number (1-88)
+function noteToFileNumber(note) {
+    const allNotes = generateAllNotes();
+    const found = allNotes.find(n => n.note === note);
+    return found ? found.file : null;
+}
+
 // Export functions for use in other scripts
 window.PianoUtils = {
     playNote,
@@ -262,5 +296,7 @@ window.PianoUtils = {
     hideLoading,
     debounce,
     throttle,
-    isMobile
+    isMobile,
+    generateAllNotes,
+    noteToFileNumber
 };
