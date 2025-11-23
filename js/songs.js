@@ -193,6 +193,11 @@ class SongPlayer {
             return;
         }
 
+        // Nếu đang phát bài khác, dừng lại
+        if (this.isPlaying) {
+            this.stop();
+        }
+
         this.currentSong = this.songs[songId];
         this.currentNoteIndex = 0;
         this.isPlaying = false;
@@ -215,6 +220,11 @@ class SongPlayer {
         this.updateProgress();
         
         window.PianoUtils.showNotification(`Đã tải bài: ${this.currentSong.title}`, 'success');
+        
+        // Tự động phát sau khi load (delay nhỏ để UI cập nhật)
+        setTimeout(() => {
+            this.play();
+        }, 300);
     }
 
     togglePlayPause() {
@@ -245,13 +255,12 @@ class SongPlayer {
         }
 
         // Auto-play: theo delays (tính delay tương đối từ nốt trước)
-        const startTime = Date.now();
         const startDelay = this.currentNoteIndex > 0 ? this.currentSong.delays[this.currentNoteIndex - 1] : 0;
         
         this.currentSong.notes.forEach((note, index) => {
             if (index >= this.currentNoteIndex) {
-                const absoluteDelay = this.currentSong.delays[index];
-                const relativeDelay = (absoluteDelay - startDelay) / this.playbackSpeed;
+                const absoluteDelay = this.currentSong.delays[index] || 0;
+                const relativeDelay = Math.max(0, (absoluteDelay - startDelay) / this.playbackSpeed);
                 
                 const timeout = setTimeout(() => {
                     if (this.isPlaying) { // Kiểm tra vẫn đang phát
@@ -268,7 +277,7 @@ class SongPlayer {
                             }, 1000);
                         }
                     }
-                }, Math.max(0, relativeDelay));
+                }, relativeDelay);
                 this.timeouts.push(timeout);
             }
         });
