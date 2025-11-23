@@ -469,6 +469,8 @@ body {
     display: flex;
     justify-content: center;
     margin-bottom: 40px;
+    width: 100%;
+    overflow: hidden;
 }
 
 .piano {
@@ -478,6 +480,9 @@ body {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform-origin: center top;
+    transition: transform 0.3s ease;
+    margin: 0 auto;
 }
 
 .key {
@@ -489,6 +494,7 @@ body {
     align-items: flex-end;
     justify-content: center;
     padding-bottom: 15px;
+    flex-shrink: 0;
 }
 
 .white-key {

@@ -48,7 +48,28 @@ class PianoRecorder {
     init() {
         this.setupEventListeners();
         this.updateUI();
+        this.scalePianoToFit();
+        window.addEventListener('resize', () => this.scalePianoToFit());
         // no auto-load to avoid localStorage usage
+    }
+
+    scalePianoToFit() {
+        const pianoWrapper = document.querySelector('.piano-wrapper');
+        const piano = document.querySelector('.piano');
+        if (!pianoWrapper || !piano) return;
+        
+        // Tính tổng width của 88 phím (52 phím trắng + 36 phím đen)
+        // Mỗi phím trắng ~60px, mỗi phím đen ~35px nhưng overlap
+        // Ước tính: 52 * 60 + padding = ~3120px
+        const estimatedWidth = 88 * 60; // Ước tính
+        const availableWidth = pianoWrapper.offsetWidth - 40; // Trừ padding
+        
+        if (availableWidth > 0 && estimatedWidth > availableWidth) {
+            const scale = availableWidth / estimatedWidth;
+            piano.style.transform = `scale(${Math.min(1, scale)})`;
+        } else {
+            piano.style.transform = 'scale(1)';
+        }
     }
 
     setupEventListeners() {
@@ -77,18 +98,26 @@ class PianoRecorder {
             });
         }
 
-        // Hotkeys: Z/X octave, Space sustain
+        // Hotkeys: Z/X octave, 0-8 số để chọn octave, Space sustain
         document.addEventListener('keydown', (e) => {
             if (e.repeat) return;
+            // Số 0-8 để chọn octave trực tiếp
+            if (e.key >= '0' && e.key <= '8') {
+                const octave = parseInt(e.key, 10);
+                this.currentOctave = octave;
+                if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
+                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (0-8: chọn, Z: giảm, X: tăng)`, 'success');
+                return;
+            }
             if (e.key.toLowerCase() === 'z') {
                 this.currentOctave = Math.max(0, this.currentOctave - 1);
                 if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
-                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (Z: giảm, X: tăng)`, 'info');
+                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (0-8: chọn, Z: giảm, X: tăng)`, 'info');
             }
             if (e.key.toLowerCase() === 'x') {
                 this.currentOctave = Math.min(8, this.currentOctave + 1);
                 if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
-                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (Z: giảm, X: tăng)`, 'info');
+                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (0-8: chọn, Z: giảm, X: tăng)`, 'info');
             }
             if (e.code === 'Space') {
                 e.preventDefault();
