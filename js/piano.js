@@ -15,6 +15,7 @@ class PianoRecorder {
         this.recordingStatus = document.getElementById('recordingStatus');
         this.octaveSelect = document.getElementById('octaveSelect');
         this.sustainOn = false;
+        this.availableNotes = new Set();
 
         // Metronome elements/state
         this.metronomeBpmInput = document.getElementById('metronomeBpm');
@@ -46,6 +47,9 @@ class PianoRecorder {
     }
 
     init() {
+        this.availableNotes = new Set(
+            Array.from(document.querySelectorAll('audio[data-note]')).map(el => el.getAttribute('data-note'))
+        );
         this.setupEventListeners();
         this.updateUI();
         this.scalePianoToFit();
@@ -104,7 +108,7 @@ class PianoRecorder {
             });
         }
 
-        // Hotkeys: Z/X octave, 0-8 số để chọn octave, Space sustain
+        // Hotkeys: 0-8 chọn octave trực tiếp, Space sustain
         document.addEventListener('keydown', (e) => {
             if (e.repeat) return;
             // Số 0-8 để chọn octave trực tiếp
@@ -112,18 +116,8 @@ class PianoRecorder {
                 const octave = parseInt(e.key, 10);
                 this.currentOctave = octave;
                 if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
-                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (0-8: chọn, Z: giảm, X: tăng)`, 'success');
+                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (0-8: chọn nhanh)`, 'success');
                 return;
-            }
-            if (e.key.toLowerCase() === 'z') {
-                this.currentOctave = Math.max(0, this.currentOctave - 1);
-                if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
-                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (0-8: chọn, Z: giảm, X: tăng)`, 'info');
-            }
-            if (e.key.toLowerCase() === 'x') {
-                this.currentOctave = Math.min(8, this.currentOctave + 1);
-                if (this.octaveSelect) this.octaveSelect.value = String(this.currentOctave);
-                window.PianoUtils?.showNotification?.(`Octave: ${this.currentOctave} (0-8: chọn, Z: giảm, X: tăng)`, 'info');
             }
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -189,23 +183,33 @@ class PianoRecorder {
         });
 
         // Add keyboard listeners
-        const keyMap = {
-            'a': 'C4', 's': 'D4', 'd': 'E4', 'f': 'F4', 'g': 'G4', 'h': 'A4', 'j': 'B4', 'k': 'C5', 'l': 'D5',
-            'w': 'C#4', 'e': 'D#4', 't': 'F#4', 'y': 'G#4', 'u': 'A#4', 'o': 'C#5', 'p': 'D#5'
-        };
+        const whiteNoteOrder = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+        const keyboardRows = [
+            { keys: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'], octaveOffset: 1 },
+            { keys: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'], octaveOffset: 0 },
+            { keys: ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'], octaveOffset: -1 }
+        ];
+        const keyMap = {};
+        keyboardRows.forEach(row => {
+            row.keys.forEach((key, idx) => {
+                const note = whiteNoteOrder[idx % whiteNoteOrder.length];
+                const extraOctave = Math.floor(idx / whiteNoteOrder.length);
+                keyMap[key] = { note, octaveOffset: row.octaveOffset + extraOctave };
+            });
+        });
 
         document.addEventListener('keydown', (e) => {
-            const baseNote = keyMap[e.key.toLowerCase()];
-            const note = baseNote ? this.applyOctave(baseNote) : null;
-            if (note) {
-                e.preventDefault();
-                this.playNote(note);
-                if (this.isRecording) {
-                    this.recordNote(note);
-                }
-                if (this.isRecordingTrack) {
-                    this.recordTrackNote(note);
-                }
+            const mapping = keyMap[e.key.toLowerCase()];
+            if (!mapping) return;
+            const note = this.getKeyboardNote(mapping.note, mapping.octaveOffset);
+            if (!note) return;
+            e.preventDefault();
+            this.playNote(note);
+            if (this.isRecording) {
+                this.recordNote(note);
+            }
+            if (this.isRecordingTrack) {
+                this.recordTrackNote(note);
             }
         });
     }
@@ -216,6 +220,15 @@ class PianoRecorder {
         if (!match) return note;
         const letter = match[1]; // C, C#, D, etc.
         return `${letter}${this.currentOctave}`;
+    }
+
+    getKeyboardNote(letter, octaveOffset = 0) {
+        const targetOctave = Math.max(0, Math.min(8, this.currentOctave + octaveOffset));
+        const note = `${letter}${targetOctave}`;
+        if (this.availableNotes.size && !this.availableNotes.has(note)) {
+            return null;
+        }
+        return note;
     }
 
     toggleMetronome() {
