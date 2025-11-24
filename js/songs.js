@@ -223,6 +223,45 @@ class SongPlayer {
         this.correctCount = 0;
         this.totalNotes = this.currentSong.notes.length;
         
+        // Preload tất cả audio cần thiết cho bài hát này
+        const uniqueNotes = [...new Set(this.currentSong.notes)];
+        let loadedCount = 0;
+        const totalNotes = uniqueNotes.length;
+        
+        uniqueNotes.forEach(note => {
+            const audio = document.querySelector(`audio[data-note="${note}"]`);
+            if (audio) {
+                // Load audio nếu chưa load
+                if (audio.readyState < 2) {
+                    audio.load();
+                    audio.addEventListener('canplay', () => {
+                        loadedCount++;
+                        if (loadedCount === totalNotes) {
+                            // Tất cả audio đã load xong, tiếp tục
+                            this.finishLoadSong();
+                        }
+                    }, { once: true });
+                } else {
+                    loadedCount++;
+                    if (loadedCount === totalNotes) {
+                        this.finishLoadSong();
+                    }
+                }
+            } else {
+                loadedCount++;
+                if (loadedCount === totalNotes) {
+                    this.finishLoadSong();
+                }
+            }
+        });
+        
+        // Nếu không có note nào, vẫn tiếp tục
+        if (totalNotes === 0) {
+            this.finishLoadSong();
+        }
+    }
+    
+    finishLoadSong() {
         // Show player
         const player = document.getElementById('songPlayer');
         if (player) {
@@ -273,33 +312,39 @@ class SongPlayer {
             return;
         }
 
-        // Auto-play: theo delays (tính delay tương đối từ nốt trước)
-        const startDelay = this.currentNoteIndex > 0 ? this.currentSong.delays[this.currentNoteIndex - 1] : 0;
+        // Auto-play: tính delay tương đối giữa các nốt liên tiếp
+        let accumulatedDelay = 0;
         
-        this.currentSong.notes.forEach((note, index) => {
-            if (index >= this.currentNoteIndex) {
-                const absoluteDelay = this.currentSong.delays[index] || 0;
-                const relativeDelay = Math.max(0, (absoluteDelay - startDelay) / this.playbackSpeed);
-                
-                const timeout = setTimeout(() => {
-                    if (this.isPlaying) { // Kiểm tra vẫn đang phát
-                        this.playNote(note);
-                        this.currentNoteIndex = index + 1;
-                        this.updateProgress();
-                        this.updateCurrentNote(note);
-                        this.updateNextNote(index + 1);
-                        
-                        // Nếu là nốt cuối, dừng sau 1 giây
-                        if (index === this.currentSong.notes.length - 1) {
-                            setTimeout(() => {
-                                if (this.isPlaying) this.stop();
-                            }, 1000);
-                        }
+        for (let index = this.currentNoteIndex; index < this.currentSong.notes.length; index++) {
+            const note = this.currentSong.notes[index];
+            const currentDelay = this.currentSong.delays[index] || 0;
+            
+            // Tính delay tương đối từ nốt trước (hoặc từ 0 nếu là nốt đầu)
+            const prevDelay = index > 0 ? (this.currentSong.delays[index - 1] || 0) : 0;
+            const relativeDelay = (currentDelay - prevDelay) / this.playbackSpeed;
+            
+            // Cộng dồn delay để tạo timeout đúng thứ tự
+            accumulatedDelay += relativeDelay;
+            
+            const timeout = setTimeout(() => {
+                if (this.isPlaying) {
+                    this.playNote(note);
+                    this.currentNoteIndex = index + 1;
+                    this.updateProgress();
+                    this.updateCurrentNote(note);
+                    this.updateNextNote(index + 1);
+                    
+                    // Nếu là nốt cuối, dừng sau 1 giây
+                    if (index === this.currentSong.notes.length - 1) {
+                        setTimeout(() => {
+                            if (this.isPlaying) this.stop();
+                        }, 1000);
                     }
-                }, relativeDelay);
-                this.timeouts.push(timeout);
-            }
-        });
+                }
+            }, accumulatedDelay);
+            
+            this.timeouts.push(timeout);
+        }
     }
 
     pause() {
@@ -341,10 +386,21 @@ class SongPlayer {
     playNote(note) {
         const audio = document.querySelector(`audio[data-note="${note}"]`);
         if (audio) {
-            audio.currentTime = 0;
-            audio.play().catch(e => {
-                console.log('Audio play failed:', e);
-            });
+            // Đảm bảo audio được load và phát ngay
+            try {
+                audio.currentTime = 0;
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {
+                        console.log('Audio play failed:', e);
+                        // Nếu lỗi, thử load lại và phát
+                        audio.load();
+                        audio.play().catch(err => console.log('Retry play failed:', err));
+                    });
+                }
+            } catch (e) {
+                console.log('Audio play error:', e);
+            }
         }
 
         // Highlight key
