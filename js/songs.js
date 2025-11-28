@@ -10,6 +10,7 @@ class SongPlayer {
         this.tutorMode = false;
         this.correctCount = 0;
         this.totalNotes = 0;
+        this.volume = 1.0;
         
         this.songs = {
             'twinkle': {
@@ -162,6 +163,16 @@ class SongPlayer {
             tutorToggle.addEventListener('change', (e) => {
                 this.tutorMode = !!e.target.checked;
                 window.PianoUtils?.showNotification?.(this.tutorMode ? 'Tutor mode: ON' : 'Tutor mode: OFF', this.tutorMode ? 'success' : 'info');
+            });
+        }
+
+        // Volume control
+        const songVolumeSlider = document.getElementById('songVolumeSlider');
+        const songVolumeValue = document.getElementById('songVolumeValue');
+        if (songVolumeSlider) {
+            songVolumeSlider.addEventListener('input', (e) => {
+                this.volume = parseInt(e.target.value, 10) / 100;
+                if (songVolumeValue) songVolumeValue.textContent = `${e.target.value}%`;
             });
         }
 
@@ -419,6 +430,7 @@ class SongPlayer {
     playNote(note) {
         const audio = document.querySelector(`audio[data-note="${note}"]`);
         if (audio) {
+            audio.volume = this.volume;
             // Đảm bảo audio được load và phát ngay
             try {
                 audio.currentTime = 0;

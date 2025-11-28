@@ -16,6 +16,7 @@ class PianoRecorder {
         this.octaveSelect = document.getElementById('octaveSelect');
         this.sustainOn = false;
         this.availableNotes = new Set();
+        this.volume = 1.0; // 0.0 to 1.0
 
         // Metronome elements/state
         this.metronomeBpmInput = document.getElementById('metronomeBpm');
@@ -107,6 +108,34 @@ class PianoRecorder {
                 this.currentOctave = parseInt(e.target.value, 10);
             });
         }
+
+        // Volume control
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                this.volume = parseInt(e.target.value, 10) / 100;
+                if (volumeValue) volumeValue.textContent = `${e.target.value}%`;
+                // Update all audio elements
+                document.querySelectorAll('audio[data-note]').forEach(audio => {
+                    audio.volume = this.volume;
+                });
+            });
+        }
+
+        // Help modal
+        const helpBtn = document.getElementById('helpBtn');
+        if (helpBtn) {
+            helpBtn.addEventListener('click', () => this.showHelpModal());
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                const target = e.target;
+                if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+                    this.showHelpModal();
+                }
+            }
+        });
 
         // Hotkeys: 0-8 chọn octave trực tiếp, Space sustain
         document.addEventListener('keydown', (e) => {
@@ -205,6 +234,8 @@ class PianoRecorder {
             if (!note) return;
             e.preventDefault();
             this.playNote(note);
+            // Visual feedback: highlight key
+            window.PianoUtils?.highlightKey?.(note);
             if (this.isRecording) {
                 this.recordNote(note);
             }
@@ -277,6 +308,7 @@ class PianoRecorder {
     playNote(note) {
         const audio = document.querySelector(`audio[data-note="${note}"]`);
         if (audio) {
+            audio.volume = this.volume;
             if (!this.sustainOn) {
                 audio.currentTime = 0;
             }
