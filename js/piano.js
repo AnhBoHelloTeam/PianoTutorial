@@ -214,7 +214,6 @@ class PianoRecorder {
         // Add keyboard listeners
         const whiteNoteOrder = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
         const keyboardRows = [
-            { keys: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'], octaveOffset: 1 },
             { keys: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'], octaveOffset: 0 },
             { keys: ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'], octaveOffset: -1 }
         ];
@@ -330,6 +329,66 @@ class PianoRecorder {
                 key.classList.remove('active');
             }, 200);
         }
+    }
+
+    showHelpModal() {
+        const modal = document.createElement('div');
+        modal.className = 'help-modal';
+        modal.innerHTML = `
+            <div class="help-modal-content">
+                <div class="help-modal-header">
+                    <h2><i class="fas fa-keyboard"></i> Phím Tắt</h2>
+                    <button class="help-modal-close">&times;</button>
+                </div>
+                <div class="help-modal-body">
+                    <div class="help-section">
+                        <h3><i class="fas fa-piano-keyboard"></i> Chơi Piano</h3>
+                        <div class="help-item">
+                            <span class="help-key">A → ;</span>
+                            <span>Octave hiện tại</span>
+                        </div>
+                        <div class="help-item">
+                            <span class="help-key">Z → /</span>
+                            <span>Octave -1 (thấp hơn)</span>
+                        </div>
+                    </div>
+                    <div class="help-section">
+                        <h3><i class="fas fa-sliders-h"></i> Điều Khiển</h3>
+                        <div class="help-item">
+                            <span class="help-key">0-8</span>
+                            <span>Chọn octave trực tiếp</span>
+                        </div>
+                        <div class="help-item">
+                            <span class="help-key">Space</span>
+                            <span>Bật/tắt Sustain</span>
+                        </div>
+                        <div class="help-item">
+                            <span class="help-key">H</span>
+                            <span>Hiển thị bảng phím tắt này</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const closeBtn = modal.querySelector('.help-modal-close');
+        const closeModal = () => {
+            modal.classList.add('fade-out');
+            setTimeout(() => modal.remove(), 300);
+        };
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        document.addEventListener('keydown', function escHandler(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', escHandler);
+            }
+        });
+        
+        setTimeout(() => modal.classList.add('show'), 10);
     }
 
     toggleRecording() {
