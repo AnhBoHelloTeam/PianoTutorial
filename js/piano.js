@@ -312,7 +312,10 @@ class PianoRecorder {
                 audio.currentTime = 0;
             }
             audio.play().catch(e => {
-                console.log('Audio play failed:', e);
+                // Silently handle autoplay restrictions - user interaction required
+                if (e.name !== 'NotAllowedError') {
+                    console.warn('Audio play failed:', e);
+                }
             });
         }
 

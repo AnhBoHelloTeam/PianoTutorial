@@ -437,14 +437,21 @@ class SongPlayer {
                 const playPromise = audio.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(e => {
-                        console.log('Audio play failed:', e);
-                        // Nếu lỗi, thử load lại và phát
-                        audio.load();
-                        audio.play().catch(err => console.log('Retry play failed:', err));
+                        // Silently handle autoplay restrictions
+                        if (e.name !== 'NotAllowedError') {
+                            console.warn('Audio play failed:', e);
+                            // Nếu lỗi, thử load lại và phát
+                            audio.load();
+                            audio.play().catch(err => {
+                                if (err.name !== 'NotAllowedError') {
+                                    console.warn('Retry play failed:', err);
+                                }
+                            });
+                        }
                     });
                 }
             } catch (e) {
-                console.log('Audio play error:', e);
+                console.warn('Audio play error:', e);
             }
         }
 

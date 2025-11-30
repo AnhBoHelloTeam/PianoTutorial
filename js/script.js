@@ -217,8 +217,14 @@ function isMobile() {
     return window.innerWidth <= 768;
 }
 
-// Add keyboard event listeners for piano keys
+// Add keyboard event listeners for piano keys (only for pages without PianoRecorder)
+// Note: piano.js handles its own keyboard listeners, so this is for other pages
 function addKeyboardListeners() {
+    // Only add if not on piano page (piano.js handles it)
+    if (document.querySelector('.piano-page')) {
+        return; // Piano page uses PianoRecorder class
+    }
+    
     const keyMap = {
         'a': 'C4', 's': 'D4', 'd': 'E4', 'f': 'F4', 'g': 'G4', 'h': 'A4', 'j': 'B4', 'k': 'C5', 'l': 'D5',
         'w': 'C#4', 'e': 'D#4', 't': 'F#4', 'y': 'G#4', 'u': 'A#4', 'o': 'C#5', 'p': 'D#5'
@@ -235,19 +241,23 @@ function addKeyboardListeners() {
 
 // Initialize common functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Add keyboard listeners if on piano page
-    if (document.querySelector('.piano-page') || document.querySelector('.songs-page') || document.querySelector('.analyzer-page')) {
+    // Add keyboard listeners only for non-piano pages
+    if (document.querySelector('.songs-page') || document.querySelector('.analyzer-page') || document.querySelector('.karaoke-page')) {
         addKeyboardListeners();
     }
     
-    // Add click listeners to piano keys
+    // Add click listeners to piano keys (for mini keyboards in songs/analyzer pages)
     document.querySelectorAll('.key').forEach(key => {
-        key.addEventListener('click', function() {
-            const note = this.getAttribute('data-note');
-            if (note) {
-                playNoteWithVisual(note);
-            }
-        });
+        // Check if listener already added
+        if (!key.dataset.listenerAdded) {
+            key.dataset.listenerAdded = 'true';
+            key.addEventListener('click', function() {
+                const note = this.getAttribute('data-note');
+                if (note) {
+                    playNoteWithVisual(note);
+                }
+            });
+        }
     });
 });
 
